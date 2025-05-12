@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AthenaPS - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/YoruAkio/ProjectAssets/main/VenLogman/6788f6faaae85fb9e8f4bfec/1737029517053_n136qzbz.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+</head>
+
+<body class="flex flex-col items-center justify-center h-screen bg-transparent">
+  <div id="login" class="fixed inset-0 flex items-center justify-center font-[Poppins]">
+    <div class="relative bg-black border-4 border-yellow-400 shadow-lg p-4 w-[40%] rounded-lg animate__animated animate__fadeIn">
+      <div class="absolute -top-12 left-1/2 transform -translate-x-1/2">
+        
+          <img src="https://raw.githubusercontent.com/YoruAkio/ProjectAssets/main/VenLogman/6788f6faaae85fb9e8f4bfec/1737029517053_n136qzbz.png" alt="Server Logo" class="w-80 h-auto rounded-full" />
+        
+      </div>
+      <div id="errorDiv" class="hidden flex flex-col mt-1 mb-1 text-sm text-yellow-400 font-600 px-[5px] bg-yellow-700">
+          <a id="errorMessage"></a>
+      </div>
+      <div id="logUII" class="flex flex-col items-center mt-2 text-sm text-white">
+          <a id="logUI" class="font-bold">Login Account</a>
+      </div>
+      <div id="accountLoggedIn" class="hidden flex flex-col items-center mt-2 text-sm text-white">
+          <a id="growId" class="font-bold">GrowID: empty</a>
+          <div class="flex justify-start text-[11px] text-white mt-1 mb-1">
+              <a id="removeSession" class="underline" href="#">Remove Session?</a>
+          </div>
+      </div>
+      <form method="post" action="/player/growid/login/validate" accept-charset="UTF-8" id="loginForm" class="animate__animated animate__fadeIn">
+        <div class="mt-2 mb-1">
+          <input name="type" value="login" type="hidden" />
+          <input name="_token" value="{}" type="hidden" />
+          <label for="loginGrowId" class="block text-white text-xs font-bold mb-1">GrowID</label>
+          <div class="flex items-center border-2 border-yellow-400 rounded bg-black px-1 py-1">
+          <i class="fas fa-user text-white mr-1 text-[15px]"></i>
+          <input type="text" name="growId" id="loginGrowId"
+            class="w-full bg-black text-white text-[15px] placeholder-white focus:outline-none"
+            placeholder="Enter your growid">
+          </div>
+        </div>
+        <div class="mt-2 mb-1">
+          <label for="loginPassword" class="block text-white text-xs font-bold mb-1">Password</label>
+          <div class="flex items-center border-2 border-yellow-400 rounded bg-black px-1 py-1">
+            <i class="fas fa-lock text-white mr-1 text-[15px]"></i>
+            <input type="password" name="password" id="loginPassword"
+              class="w-full bg-black text-white text-[15px] placeholder-white focus:outline-none"
+              placeholder="Enter your password">
+            <button type="button" id="toggleLogPassword" class="text-white ml-2 focus:outline-none text-[15px]">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <div class="flex justify-between items-center mt-3">
+          <div class="flex justify-start text-[13px] text-white">
+            Don't have an account?&nbsp;<a id="RegisterAccount" class="underline text-yellow-500"
+            href="#">Register</a>
+          </div>
+        </div>
+        <div class="flex justify-between items-center mt-5">
+          </div>
+          <button id="loginButton" class="w-full px-2 py-2 rounded bg-yellow-500 text-white text-sm hover:bg-yellow-700 transition duration-200 ease-in-out transform hover:scale-105">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (localStorage.getItem('growId')) {
+        document.getElementById('growId').innerHTML = `GrowID: ${localStorage.getItem('growId')}`;
+        document.getElementById('loginGrowId').value = localStorage.getItem('growId');
+        document.getElementById('accountLoggedIn').classList.remove('hidden');
+      }
+      if (localStorage.getItem('password')) { 
+        document.getElementById('loginPassword').value = localStorage.getItem('password');
+        document.getElementById('accountLoggedIn').classList.remove('hidden');
+      }
+      // Login variables
+      const loginGrowId = document.getElementById('loginGrowId').value
+      const loginPassword = document.getElementById('loginPassword').value
+    });
+    
+ 
+    //Logic Login Button
+    document.getElementById('loginButton').addEventListener('click', function (event) {
+      event.preventDefault();
+
+      const loginForm = document.getElementById('loginForm');
+      const uName = document.getElementById('loginGrowId').value;
+      const uPass = document.getElementById('loginPassword').value;
+      
+      const upperUserInput = uName.toUpperCase();
+      
+      
+
+      if (!uName || !uPass) {
+        document.getElementById('errorDiv').classList.remove('hidden');
+        document.getElementById('errorMessage').innerHTML = 'GrowID or Password is empty';
+        return;
+      } else if (uName.length < 4 || uPass.length < 4) {
+        document.getElementById('errorDiv').classList.remove('hidden');
+        document.getElementById('errorMessage').innerHTML = 'Username or Password must be at least 4 characters long';
+        return;
+      } else {
+        loginForm.submit();
+        localStorage.setItem('growId', document.getElementById('loginGrowId').value);
+        localStorage.setItem('password', document.getElementById('loginPassword').value);
+      }
+    })
+
+    document.getElementById('toggleLogPassword').addEventListener('click', function () {
+      const LpasswordField = document.getElementById('loginPassword')
+      const LpasswordFieldType = LpasswordField.getAttribute('type');
+      if (LpasswordFieldType === 'password') {
+        LpasswordField.setAttribute('type', 'text');
+        this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+      } else {
+        LpasswordField.setAttribute('type', 'password');
+        this.innerHTML = '<i class="fas fa-eye"></i>';
+      }
+    });
+    
+    document.getElementById('removeSession').addEventListener('click', function () {
+      localStorage.removeItem('growId');
+      localStorage.removeItem('password');
+      document.getElementById('loginGrowId').value = "";
+      document.getElementById('loginPassword').value = "";
+      document.getElementById('accountLoggedIn').classList.add('hidden');
+    });
+  </script>
+</body>
+
+</html>
