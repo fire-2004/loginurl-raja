@@ -70,14 +70,12 @@ app.all('/player/growid/register/validate', (req, res) => {
     );
 });
 
-app.all('/player/*', function (req, res) {
-    res.status(301).redirect('https://api.yoruakio.tech/player/' + req.path.slice(8));
-});
 app.post('/player/growid/checktoken', (req,res)=>{
     res.send(
         {"status":"success","message":"Account Validated.","token":"${req.body.refreshToken}","url":"","accountType":"growtopia"},
     );
 }); 
+
 app.get('/', function (req, res) {
     res.send('Hello World!');
 });
