@@ -41,12 +41,13 @@ app.all('/player/login/dashboard', function (req, res) {
 });
 
 app.all('/player/growid/login/validate', (req, res) => {
+	const type = req.body.type;
     const _token = req.body._token;
     const growId = req.body.growId;
     const password = req.body.password;
 
     const token = Buffer.from(
-        `_token=${_token}&growId=${growId}&password=${password}`,
+        `type=${type}&_token=${_token}&growId=${growId}&password=${password}`,
     ).toString('base64');
 
     res.send(
@@ -54,13 +55,29 @@ app.all('/player/growid/login/validate', (req, res) => {
     );
 });
 
+app.all('/player/growid/register/validate', (req, res) => {
+	const type = req.body.type;
+    const _token = req.body._token;
+    const growId = req.body.growId;
+    const password = req.body.password; 
+
+    const token = Buffer.from(
+        `type=${type}&_token=${_token}&growId=${growId}&password=${password}`,
+    ).toString('base64');
+
+    res.send(
+        `{"status":"success","message":"Account Registered.","token":"${token}","url":"","accountType":"growtopia"}`,
+    );
+});
+
+app.all('/player/*', function (req, res) {
+    res.status(301).redirect('https://api.yoruakio.tech/player/' + req.path.slice(8));
+});
 app.post('/player/growid/checktoken', (req,res)=>{
     res.send(
         {"status":"success","message":"Account Validated.","token":"${req.body.refreshToken}","url":"","accountType":"growtopia"},
     );
 }); 
- 
-
 app.get('/', function (req, res) {
     res.send('Hello World!');
 });
